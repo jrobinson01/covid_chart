@@ -1,0 +1,12 @@
+{
+  "name": "covid_chart",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "serve":"http-server --ssl --cert=certs/localhost.crt --key=certs/localhost.key"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.1"
+  }
+}
