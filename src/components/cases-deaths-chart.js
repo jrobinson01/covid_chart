@@ -133,7 +133,7 @@ export default class CasesDeathsChart extends LitElement {
     if (selectedState && selectedCounty) {
       return html`
         <h3>${selectedState.name} : ${selectedCounty}</h3>
-        <p>using data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">NY Times</a></p>
+        <p>using data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">The New York Times</a></p>
         <p>* potential cases is actual cases multiplied by 3.</p>`;
     } else if (selectedState && !selectedCounty) {
       return html`
