@@ -152,7 +152,8 @@ export default class CovidChartsApp extends LitElement {
 
   async loadCsvData() {
     const counties = await d3.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv');
-    const pops = await d3.csv('data/populations-by-county-est2019.csv');
+    // not using population data yet.
+    // const pops = await d3.csv('data/populations-by-county-est2019.csv');
     // only states but has way more data
     const statesData = await d3.csv('https://covidtracking.com/api/v1/states/daily.csv');
 
@@ -177,7 +178,7 @@ export default class CovidChartsApp extends LitElement {
       return acc;
     }, {});
 
-    this.appMachine('loaded', {counties, pops, states:stateNames, stateCounties, statesData});
+    this.appMachine('loaded', {counties, states:stateNames, stateCounties, statesData});
   }
 
   render() {
