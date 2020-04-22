@@ -6,7 +6,6 @@ export default class CasesDeathsChart extends LitElement {
     return css`
       :host {
         display: block;
-
       }
     `;
   }
@@ -33,35 +32,14 @@ export default class CasesDeathsChart extends LitElement {
   }
 
   drawChart(counties, statesData, selectedState, selectedCounty) {
-    console.log('drawChart', counties, selectedState, selectedCounty);
     if (!counties) {
       return;
     }
     let datasets = [];
     let labels = [];
-    // if(this.chart) {
-    //   this.chart.destroy();
-    // }
+
     if (selectedState && !selectedCounty) {
-      // TODO: use statesData instead...
-      // console.log('drawing state', selectedState, counties);
-      // filtered = counties.filter(c => c.state === selectedState).reduce((acc, val) => {
-      //   const previous = acc[acc.length-1];
-      //   if (!previous) {
-      //     // first
-      //     acc.push(Object.assign({}, val));
-      //     return acc;
-      //   } else {
-      //     if (previous.date === val.date) {
-      //       // same date, add county's cases and deaths
-      //       previous.cases = parseInt(previous.cases) + parseInt(val.cases);
-      //       previous.deaths = parseInt(previous.deaths) + parseInt(val.deaths);
-      //     } else {
-      //       acc.push(Object.assign({}, val));
-      //     }
-      //     return acc;
-      //   }
-      // }, []);
+      // draw chart for selectedState
       const filtered = statesData.filter(r => r.state === selectedState.abbreviation).reverse();
       datasets = [
         {
@@ -111,6 +89,7 @@ export default class CasesDeathsChart extends LitElement {
       ];
       labels = filtered.map(f => f.date);
     } else if (selectedState && selectedCounty) {
+      // draw chart for selected county
       const filtered = counties.filter(r => r.state === selectedState.name && r.county === selectedCounty);
       datasets = [
         {
@@ -131,12 +110,8 @@ export default class CasesDeathsChart extends LitElement {
       ];
       labels = filtered.map(f => f.date);
     }
-    const context = this.shadowRoot.querySelector('canvas').getContext('2d');
-    console.log('canvas context', context);
-
-    console.log('datasets', datasets);
     if (!this.chart) {
-      this.chart = new Chart(context, {
+      this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'line',
         data: {
           labels,
@@ -147,7 +122,6 @@ export default class CasesDeathsChart extends LitElement {
       this.chart.data = {labels, datasets};
       this.chart.update();
     }
-
   }
 
   updated() {
@@ -155,8 +129,23 @@ export default class CasesDeathsChart extends LitElement {
     super.updated();
   }
 
+  renderHeader(selectedState, selectedCounty) {
+    if (selectedState && selectedCounty) {
+      return html`
+        <h3>${selectedState.name} : ${selectedCounty}</h3>
+        <p>using data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">NY Times</a></p>`;
+    } else if (selectedState && !selectedCounty) {
+      return html`
+        <h3>${selectedState.name}</h3>
+        <p>using data from <a href="https://covidtracking.com/api#states-historical-data">covidtracking.com</a></p>`;
+    }
+  }
+
   render() {
-    return html`<canvas id="cd-chart"></canvas>`;
+    return html`
+      ${this.renderHeader(this.selectedState, this.selectedCounty)}
+      <canvas id="cd-chart"></canvas>
+    `;
   }
 
 }
