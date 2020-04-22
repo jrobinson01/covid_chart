@@ -4,9 +4,19 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "serve":"http-server --ssl --cert=certs/localhost.crt --key=certs/localhost.key"
+    "serve": "es-dev-server",
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
-    "http-server": "^0.12.1"
+    "@open-wc/building-rollup": "^0.20.3",
+    "es-dev-server": "^1.38.3",
+    "koa-bodyparser": "^4.2.1",
+    "rimraf": "^3.0.1",
+    "rollup": "^1.31.0"
+  },
+  "dependencies": {
+    "chart.js": "^2.9.3",
+    "fn-machine": "^0.0.11",
+    "lit-element": "^2.3.1"
   }
 }
