@@ -3,6 +3,7 @@ import {machine, state} from 'fn-machine';
 import './components/state-select.js';
 import './components/county-select.js';
 import './components/cases-deaths-chart.js';
+import './components/deaths-by-county.js';
 
 // map state names to abbreviations
 const ABBREVIATIONS = {
@@ -95,7 +96,14 @@ export default class CovidChartsApp extends LitElement {
 
   constructor() {
     super();
-    this.context = {};
+    this.context = {
+      selectedState: {
+        name: '',
+        abbreviation: '',
+      },
+    };
+    // set Chart defaults?
+    Chart.defaults.global.defaultFontFamily = 'Roboto, Arial, sans-serif';
   }
 
   connectedCallback() {
@@ -181,14 +189,20 @@ export default class CovidChartsApp extends LitElement {
     this.appMachine('loaded', {counties, states:stateNames, stateCounties, statesData});
   }
 
+
   render() {
     if (this.currentState === STATES.LOADING_CSVS || this.currentState === STATES.INITIAL) {
       return html`loading...`;
     }
     return html`
       <state-select .states=${this.context.states} @selection=${event => this.onStateSelected(event.detail)}></state-select>
-      <county-select .counties=${ this.context.selectedState ? this.context.stateCounties[this.context.selectedState.name] : []} @selection=${event => this.onCountySelected(event.detail)}></county-select>
-      <cases-deaths-chart .statesData=${this.context.statesData} .counties=${this.context.counties} .selectedState=${this.context.selectedState} .selectedCounty=${this.context.selectedCounty}></cases-deaths-chart>
+      ${this.context.selectedState ?
+      html`
+        <county-select .counties=${ this.context.selectedState ? this.context.stateCounties[this.context.selectedState.name] : []} @selection=${event => this.onCountySelected(event.detail)}></county-select>
+        <cases-deaths-chart .statesData=${this.context.statesData} .counties=${this.context.counties} .selectedState=${this.context.selectedState} .selectedCounty=${this.context.selectedCounty}></cases-deaths-chart>
+        <deaths-by-county .countiesData=${this.context.counties} .selectedState=${this.context.selectedState}></deaths-by-county>
+      ` : ''}
+
     `;
   }
 }

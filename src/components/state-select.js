@@ -18,7 +18,9 @@ export default class StateSelect extends LitElement {
 
 
   render() {
-    return html`<select @change=${event => this.onSelection(event.currentTarget.value)}>
+    return html`
+    <label for="states">Select a state</label>
+    <select name="states" @change=${event => this.onSelection(event.currentTarget.value)}>
       ${this.states.map(s => html`<option value=${s} label=${s}></option>`)}
     </select>`;
   }

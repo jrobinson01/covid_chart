@@ -55,6 +55,12 @@ export default class CasesDeathsChart extends LitElement {
           data: filtered.map(f => f.death)
         },
         {
+          label: 'Daily deaths',
+          borderColor: '#eb6734',
+          backgroundColor: '#eb6734',
+          data: filtered.map(f => f.deathIncrease)
+        },
+        {
           label: 'currently hospitalized',
           borderColor: '#0000FF',
           backgroundColor: '#0000FF',
