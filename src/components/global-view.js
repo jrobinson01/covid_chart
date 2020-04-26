@@ -1,7 +1,6 @@
 import {LitElement, html, css} from 'lit-element';
-import {outlet} from 'lit-element-router';
 
-export default class GlobalView extends outlet(LitElement) {
+export default class GlobalView extends LitElement {
   render() {
     return html`GLOBAL`;
   }

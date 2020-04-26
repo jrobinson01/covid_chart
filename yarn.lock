@@ -1323,6 +1323,11 @@ crypt@~0.0.1:
   resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
 
+date-fns@^2.12.0:
+  version "2.12.0"
+  resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/date-fns/-/date-fns-2.12.0.tgz#01754c8a2f3368fc1119cf4625c3dad8c1845ee6"
+  integrity sha1-AXVMii8zaPwRGc9GJcPa2MGEXuY=
+
 debounce@^1.2.0:
   version "1.2.0"
   resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/debounce/-/debounce-1.2.0.tgz#44a540abc0ea9943018dc0eaa95cce87f65cd131"

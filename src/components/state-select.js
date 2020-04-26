@@ -19,13 +19,27 @@ export default class StateSelect extends navigator(LitElement) {
     return css`
     :host {
       display: block;
+      height: 100vh;
+      overflow-y:scroll;
+    }
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    a:visited {
+      color: black;
     }
     .row {
       padding: 10px;
       background-color: #CCCCCC;
+      border-bottom: 2px solid white;
     }
     .selected {
-      background-color: green;
+      background-color: #666666;
+      color: #FFFFFF;
+    }
+    .selected a {
+      color: white;
     }
     `;
   }
