@@ -1940,6 +1940,11 @@ levenary@^1.1.1:
   dependencies:
     leven "^3.1.0"
 
+lit-element-router@^2.0.1:
+  version "2.0.1"
+  resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/lit-element-router/-/lit-element-router-2.0.1.tgz#92d22ebd9db490aecc649e76a620eb811ec2f1aa"
+  integrity sha1-ktIuvZ20kK7MZJ52piDrgR7C8ao=
+
 lit-element@^2.3.1:
   version "2.3.1"
   resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/lit-element/-/lit-element-2.3.1.tgz#73343b978fa1e73d60526c6bb6ad60f53a16c343"

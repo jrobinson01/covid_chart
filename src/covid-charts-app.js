@@ -1,88 +1,43 @@
 import {LitElement, html, css} from 'lit-element';
+import {router} from 'lit-element-router';
 import {machine, state} from 'fn-machine';
 import './components/state-select.js';
 import './components/county-select.js';
 import './components/cases-deaths-chart.js';
 import './components/deaths-by-county.js';
-
-// map state names to abbreviations
-const ABBREVIATIONS = {
-  Alaska: 'AK',
-  Alabama: 'AL',
-  Arizona: 'AZ',
-  Arkansas: 'AR',
-  California: 'CA',
-  Colorado: 'CO',
-  Connecticut: 'CT',
-  Delaware: 'DE',
-  Florida: 'FL',
-  Georgia: 'GA',
-  Hawaii: 'HI',
-  Idaho: 'ID',
-  Illinois: 'IL',
-  Indiana: 'IN',
-  Iowa: 'IA',
-  Kansas: 'KS',
-  Kentucky: 'KY',
-  Louisiana: 'LA',
-  Maine: 'ME',
-  Maryland: 'MD',
-  Massachusetts: 'MA',
-  Michigan: 'MI',
-  Minnesota: 'MN',
-  Missouri: 'MO',
-  Montana: 'MT',
-  Nebraska: 'NE',
-  Nevada: 'NV',
-  'New Hampshire': 'NH',
-  'New Jersey': 'NJ',
-  'New York': 'NY',
-  'North Carolina': 'NC',
-  'North Dakota': 'ND',
-  Ohio: 'OH',
-  Oklahoma: 'OK',
-  Oregon: 'OR',
-  Pennsylvania: 'PA',
-  'Rhode Island': 'RI',
-  'South Carolina': 'SC',
-  'South Dakota': 'SD',
-  Tennessee: 'TN',
-  Texas: 'TX',
-  Utah: 'UT',
-  Vermont: 'VT',
-  Virginia: 'VA',
-  Washington: 'WA',
-  'West Virginia': 'WV',
-  Wisconsin: 'WI',
-  Wyoming: 'WY',
-  'District of Columbia': 'DC',
-}
+import {ABBREVIATIONS, stateFromAbb} from './lib/state-abbs.js';
 
 const STATES = {
   INITIAL: 'initial',
   LOADING_CSVS: 'loading-csvs',
   READY: 'ready',
-  VIEW_BY_STATE:'view-by-state',
-  VIEW_BY_COUNTY: 'view-by-county',
+  STATE_SELECTED:'state-selected',
+  COUNTY_SELECTED: 'county-selected',
 };
 
 // shared transitions
 function selectState(detail, context) {
   return {
-    state: STATES.VIEW_BY_STATE,
+    state: STATES.STATE_SELECTED,
     context: {...context, ...{selectedState: {name: detail.state, abbreviation: ABBREVIATIONS[detail.state]}, selectedCounty: undefined}}
   }
 }
 
 function selectCounty(detail, context) {
   return {
-    state: STATES.VIEW_BY_COUNTY,
+    state: STATES.COUNTY_SELECTED,
     context: {...context, ...{selectedCounty: detail.county}}
   };
 }
 
-export default class CovidChartsApp extends LitElement {
-
+export default class CovidChartsApp extends router(LitElement) {
+  static get styles() {
+    return css`
+      :host {
+        display: flex;
+      }
+    `;
+  }
   static get properties() {
     return {
       currentState:{
@@ -90,26 +45,76 @@ export default class CovidChartsApp extends LitElement {
       },
       context: {
         type: Object
-      }
+      },
+      route: {
+        type: String,
+      },
+      params: {
+        type: Object,
+      },
+      query: {
+        type: Object,
+      },
     }
+  }
+
+  static get routes() {
+    return [
+      {
+        name: 'home',
+        pattern: '',
+      },
+      {
+        name:'state',
+        pattern: 'state/:abb',
+      },
+      {
+        name:'county',
+        pattern: 'state/:abb/county/:fips'
+      }
+    ]
   }
 
   constructor() {
     super();
-    this.context = {
-      selectedState: {
-        name: '',
-        abbreviation: '',
-      },
-    };
-    // set Chart defaults?
+    // this.context = {
+    //   selectedState: {
+    //     name: '',
+    //     abbreviation: '',
+    //   },
+    // };
+    this.route = '';
+    this.params = {};
+    this.query = {};
+    // set Chart defaults
     Chart.defaults.global.defaultFontFamily = 'Roboto, Arial, sans-serif';
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
     this.initMachine();
     const currentState = this.appMachine('load');
+    this.currentState = currentState.state;
+    this.context = currentState.context;
+  }
+
+  router(route, params, query, data) {
+    this.route = route;
+    this.params = params;
+    this.query = query;
+    console.log('router called', route, params, query, data);
+    // TODO: routing can start the app from anywhere: like /state/NY/county/fips
+    // means we have a selected state and county and should show the proper screen
+    // asap. when the state.LOADING>loaded transition fires, check for params and route
+    // appropriately?
+    if (this.route === 'state') {
+      // select state name via abbreviation
+      const abb = this.params.abb;
+      const state = stateFromAbb(abb);
+      this.appMachine('selectState', {state});
+    } else if (this.route === 'county') {
+      console.log('route is county');
+      // select county via fips
+      const fips = this.params.fips;
+      const county = (this.context.counties || []).find(c => c.fips === fips);
+      this.appMachine('selectCounty', {county});
+    }
   }
 
   initMachine() {
@@ -134,12 +139,30 @@ export default class CovidChartsApp extends LitElement {
       }),
       state(STATES.READY, {
         selectState
+      }, () => {
+        // check route and params for state
+        console.log('entered ready state', this.route);
+        if (this.route === 'state' || this.route === 'county') {
+          const abb = this.params.abb;
+          const state = stateFromAbb(abb);
+          this.appMachine('selectState', {state});
+        }
       }),
-      state(STATES.VIEW_BY_STATE, {
+      state(STATES.STATE_SELECTED, {
         selectState,
         selectCounty,
+      }, () => {
+        // check route and params for county
+        if (this.route === 'county') {
+          const fips = this.params.fips;
+          const county = (this.context.counties || []).find(c => c.fips === fips);
+          if (county) {
+            this.appMachine('selectCounty', {county: county.county});
+          }
+
+        }
       }),
-      state(STATES.VIEW_BY_COUNTY, {
+      state(STATES.COUNTY_SELECTED, {
         selectState,
         selectCounty,
       })
@@ -150,21 +173,12 @@ export default class CovidChartsApp extends LitElement {
     })
   }
 
-  onStateSelected(state) {
-    this.appMachine('selectState', {state});
-  }
-
-  onCountySelected(county) {
-    this.appMachine('selectCounty', {county});
-  }
-
   async loadCsvData() {
     const counties = await d3.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv');
     // not using population data yet.
     // const pops = await d3.csv('data/populations-by-county-est2019.csv');
-    // only states but has way more data
+    // only states, but has way more data
     const statesData = await d3.csv('https://covidtracking.com/api/v1/states/daily.csv');
-
     // precalculate unique state names
     const stateNames = counties
     .map(r => r.state)
@@ -180,8 +194,8 @@ export default class CovidChartsApp extends LitElement {
       if (!acc[val.state]) {
         acc[val.state] = [];
       }
-      if (!acc[val.state].includes(val.county)) {
-        acc[val.state].push(val.county);
+      if (!acc[val.state].find(c => c.county === val.county)) {
+        acc[val.state].push(val);
       }
       return acc;
     }, {});
@@ -195,10 +209,15 @@ export default class CovidChartsApp extends LitElement {
       return html`loading...`;
     }
     return html`
-      <state-select .states=${this.context.states} @selection=${event => this.onStateSelected(event.detail)}></state-select>
+      <state-select .states=${this.context.states} @selection=${event => this.onStateSelected(event.detail)} .selected=${this.context.selectedState && this.context.selectedState.name}></state-select>
       ${this.context.selectedState ?
       html`
-        <county-select .counties=${ this.context.selectedState ? this.context.stateCounties[this.context.selectedState.name] : []} @selection=${event => this.onCountySelected(event.detail)}></county-select>
+        <county-select
+          .counties=${ this.context.selectedState ? this.context.stateCounties[this.context.selectedState.name] : []}
+          @selection=${event => this.onCountySelected(event.detail)}
+          .selected=${this.context.selectedCounty}
+          .selectedState=${this.context.selectedState}>
+        </county-select>
         <cases-deaths-chart .statesData=${this.context.statesData} .counties=${this.context.counties} .selectedState=${this.context.selectedState} .selectedCounty=${this.context.selectedCounty}></cases-deaths-chart>
         <deaths-by-county .countiesData=${this.context.counties} .selectedState=${this.context.selectedState}></deaths-by-county>
       ` : ''}
