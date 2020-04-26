@@ -21,7 +21,7 @@ export default class CountySelect extends LitElement {
     return html`
     <label for="county">Select a county</label>
     <select name="county" @change=${event => this.onSelection(event.currentTarget.value)}>
-      ${this.counties.map(c => html`<option value=${c} label=${c}></option>`)}
+      ${this.counties.map(c => html`<option .value=${c} .label=${c}>${c}</option>`)}
     </select>`;
   }
 }
