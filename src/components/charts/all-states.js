@@ -1,0 +1,117 @@
+import {LitElement, html} from 'lit-element';
+import {chartStyles, chartColors} from './chart-styles.js';
+import {stateFromAbb} from '../../lib/state-abbs.js';
+
+export default class AllStates extends LitElement {
+  static get styles() {
+    return chartStyles;
+  }
+
+  static get properties() {
+    return {
+      statesData: {
+        type: Array,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.chart = null;
+  }
+
+  drawChart( states = []) {
+    if (states.length === 0) {
+      return;
+    }
+    // find each states latest data.
+    // states is already sorted by date, so include the first
+    // item found for each state
+    const perState = states.reduce((acc, v) => {
+      if (acc.find(a => a.state === v.state)) {
+        return acc;
+      }
+      acc.push(v);
+      return acc;
+    }, []);
+    const labels = perState.map(s => stateFromAbb(s.state));
+    const cases = perState.map(s => s.hospitalizedCumulative);
+    const deaths = perState.map(s => s.death);
+    const tests =  perState.map(s => s.totalTestResults);
+    const recovered = perState.map(s => s.recovered);
+    if (!this.chart) {
+      this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
+        type: 'bar',
+        options: {
+          legend: {
+            display: true,
+          },
+        },
+        data : {
+          labels,
+          datasets: [
+          {
+            label:'hospitalized',
+            backgroundColor: chartColors.get('warning'),
+            data: cases,
+          },
+          {
+            label:'deaths',
+            backgroundColor: chartColors.get('danger'),
+            data: deaths,
+          },
+          {
+            label:'tests',
+            backgroundColor: chartColors.get('neutral'),
+            data: tests,
+          },
+          {
+            label:'recovered',
+            backgroundColor: chartColors.get('positive'),
+            data: recovered,
+          },
+        ],
+        }
+      });
+    } else {
+      this.chart.data = {
+        labels,
+        datasets: [
+        {
+          label: 'cases',
+          backgroundColor: chartColors.get('warning'),
+          data: cases,
+        },
+        {
+          label: 'deaths',
+          backgroundColor: chartColors.get('danger'),
+          data: deaths,
+        },
+      ],
+      };
+      this.chart.update();
+    }
+  }
+
+  updated() {
+    console.log('updated', this.statesData);
+    this.drawChart(this.statesData);
+    super.updated();
+  }
+
+  render() {
+    return html`
+      <header>
+        <h4>By state</h4>
+      </header>
+      <article>
+        <canvas></canvas>
+      </article>
+      <footer>
+        <p>data from <a href="https://covidtracking.com/api#states-historical-data">covidtracking.com</a></p>
+      </footer>
+    `;
+  }
+}
+
+customElements.define('all-states', AllStates);
