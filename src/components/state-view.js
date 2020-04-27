@@ -43,7 +43,8 @@ export default class StateView extends LitElement {
   }
 
   get currentStateData() {
-    return this.selectedState && this.selectedState.abbreviation && this.statesData.find(s => s.state === this.selectedState.abbreviation);
+    const data = this.selectedState && this.selectedState.abbreviation && this.statesData.find(s => s.state === this.selectedState.abbreviation);
+    return data || {};
   }
 
   get stateData() {
@@ -53,7 +54,7 @@ export default class StateView extends LitElement {
   render() {
     return html`
     <header>
-      <h3>${this.selectedState.name}</h3>
+      <h3>${this.selectedState ? this.selectedState.name : ''}</h3>
     </header>
     <article>
       <deaths-by-county .countiesData=${this.countiesData} .selectedState=${this.selectedState}></deaths-by-county>

@@ -1,26 +1,15 @@
-import {LitElement, html, css} from 'lit-element';
+import {LitElement, html} from 'lit-element';
 import {chartStyles, chartColors} from './chart-styles.js';
-// unused
-// function getRandomColor() {
-//   const letters = '0123456789ABCDEF'.split('');
-//   let color = '#';
-//   for (let i = 0; i < 6; i++ ) {
-//       color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
+import {stateFromAbb} from '../../lib/state-abbs.js';
 
-export default class DeathsByCounty extends LitElement {
+export default class AllStates extends LitElement {
   static get styles() {
     return chartStyles;
   }
 
   static get properties() {
     return {
-      selectedState: {
-        type: Object,
-      },
-      countiesData: {
+      statesData: {
         type: Array,
       },
     };
@@ -29,19 +18,27 @@ export default class DeathsByCounty extends LitElement {
   constructor() {
     super();
     this.chart = null;
-    this.selectedState = {};
   }
 
-  drawChart(selectedState, counties = []) {
-    if (counties.length === 0 || !selectedState) {
+  drawChart( states = []) {
+    if (states.length === 0) {
       return;
     }
-    const currentDate = counties[counties.length-1].date;
-    const data = counties.filter(c =>
-      c.state === selectedState.name && c.date === currentDate && parseFloat(c.cases) > 0);
-    const labels = data.map(c => c.county);
-    const deaths = data.map(c => c.deaths);
-    const cases = data.map(c => c.cases);
+    // find each states latest data.
+    // states is already sorted by date, so include the first
+    // item found for each state
+    const perState = states.reduce((acc, v) => {
+      if (acc.find(a => a.state === v.state)) {
+        return acc;
+      }
+      acc.push(v);
+      return acc;
+    }, []);
+    const labels = perState.map(s => stateFromAbb(s.state));
+    const cases = perState.map(s => s.hospitalizedCumulative);
+    const deaths = perState.map(s => s.death);
+    const tests =  perState.map(s => s.totalTestResults);
+    const recovered = perState.map(s => s.recovered);
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'bar',
@@ -54,7 +51,7 @@ export default class DeathsByCounty extends LitElement {
           labels,
           datasets: [
           {
-            label:'cases',
+            label:'hospitalized',
             backgroundColor: chartColors.get('warning'),
             data: cases,
           },
@@ -62,6 +59,16 @@ export default class DeathsByCounty extends LitElement {
             label:'deaths',
             backgroundColor: chartColors.get('danger'),
             data: deaths,
+          },
+          {
+            label:'tests',
+            backgroundColor: chartColors.get('neutral'),
+            data: tests,
+          },
+          {
+            label:'recovered',
+            backgroundColor: chartColors.get('positive'),
+            data: recovered,
           },
         ],
         }
@@ -87,25 +94,24 @@ export default class DeathsByCounty extends LitElement {
   }
 
   updated() {
-    this.drawChart(this.selectedState, this.countiesData);
+    console.log('updated', this.statesData);
+    this.drawChart(this.statesData);
     super.updated();
   }
 
   render() {
     return html`
       <header>
-        <h4>By county</h4>
+        <h4>By state</h4>
       </header>
       <article>
         <canvas></canvas>
       </article>
       <footer>
-        <p>* counties with 0 reported cases ommitted</p>
-        <p>data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">The New York Times</a></p>
+        <p>data from <a href="https://covidtracking.com/api#states-historical-data">covidtracking.com</a></p>
       </footer>
     `;
   }
-
 }
 
-customElements.define('deaths-by-county', DeathsByCounty);
+customElements.define('all-states', AllStates);

@@ -3,3 +3,4 @@ dist
 .firebaserc
 firebase.json
 .firebase
+firebase-debug.log

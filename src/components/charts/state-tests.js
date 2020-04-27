@@ -25,9 +25,10 @@ export default class StateTests extends LitElement {
   constructor() {
     super();
     this.chart = null;
+    this.stateData = {};
   }
 
-  drawChart(selectedState, stateData, statePopData) {
+  drawChart(stateData, statePopData) {
     if (!stateData || !statePopData) {
       return;
     }
@@ -37,7 +38,8 @@ export default class StateTests extends LitElement {
     const untested = totalPopulation - parseFloat(stateData.totalTestResults);
     const labels = [`Untested`, `Positive`, `Negative`];
     const values = [untested, positive, negative];
-    const colors = [chartColors.get('neutral'), chartColors.get('danger'), chartColors.get('positive')]
+    const colors = [chartColors.get('neutral'), chartColors.get('danger'), chartColors.get('positive')];
+
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'doughnut',
@@ -66,14 +68,14 @@ export default class StateTests extends LitElement {
   }
 
   updated() {
-    this.drawChart(this.selectedState, this.stateData, this.statePopData);
+    this.drawChart(this.stateData, this.statePopData);
     super.updated();
   }
 
   render() {
     return html`
       <header>
-        <h4>Tests as of ${format(new Date(this.stateData.dateChecked), 'PPpp')}</h4>
+        <h4>Tests as of ${this.stateData.dateChecked ? format(new Date(this.stateData.dateChecked), 'PPpp') : ''}</h4>
       </header>
       <article>
         <canvas></canvas>

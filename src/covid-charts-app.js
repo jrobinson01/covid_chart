@@ -5,6 +5,7 @@ import './components/state-select.js';
 import './components/global-view.js';
 import './components/app-views.js';
 import './components/state-view.js';
+import './components/app-link.js';
 
 import {ABBREVIATIONS, stateFromAbb} from './lib/state-abbs.js';
 
@@ -51,6 +52,8 @@ export default class CovidChartsApp extends router(LitElement) {
       }
 
       .sidebar {
+        height: 100vh;
+        overflow-y: scroll;
         grid-area: sidebar;
       }
 
@@ -64,12 +67,6 @@ export default class CovidChartsApp extends router(LitElement) {
         color: #FFFFFF;
         grid-area: footer;
         display: block;
-      }
-      a {
-        color: #FFFFFF;
-      }
-      a:visited {
-        color: #FFFFFF;
       }
     `;
   }
@@ -255,7 +252,7 @@ export default class CovidChartsApp extends router(LitElement) {
     }
 
     return html`
-    <header>US state by state Covid-19 Charts</header>
+    <header><app-link href="/">US state by state Covid-19 Charts</app-link></header>
     <div class="sidebar">
       <state-select
         .states=${this.context.states}
@@ -265,7 +262,7 @@ export default class CovidChartsApp extends router(LitElement) {
     </div>
     <article>
       <app-views active-route=${this.route}>
-        <global-view route="home"></global-view>
+        <global-view route="home" .statesData=${this.context.statesData}></global-view>
         <state-view
           route="state"
           .selectedState=${this.context.selectedState}

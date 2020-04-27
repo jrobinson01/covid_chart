@@ -19,8 +19,6 @@ export default class StateSelect extends navigator(LitElement) {
     return css`
     :host {
       display: block;
-      height: 100vh;
-      overflow-y:scroll;
     }
     a {
       text-decoration: none;
@@ -30,6 +28,7 @@ export default class StateSelect extends navigator(LitElement) {
       color: black;
     }
     .row {
+      display: block;
       padding: 10px;
       background-color: #CCCCCC;
       border-bottom: 2px solid white;
@@ -39,6 +38,9 @@ export default class StateSelect extends navigator(LitElement) {
       color: #FFFFFF;
     }
     .selected a {
+      color: white;
+    }
+    .selected a:visited {
       color: white;
     }
     `;
@@ -60,9 +62,7 @@ export default class StateSelect extends navigator(LitElement) {
       <h3>Select a state</h3>
       <article>
       ${this.states.map(s => html`
-        <div class="row ${s === this.selected ? 'selected' : ''}">
-          <a href="/state/${ABBREVIATIONS[s]}" @click=${this.linkClick}>${s}</a>
-        </div>
+          <a class="row ${s === this.selected ? 'selected' : ''}" href="/state/${ABBREVIATIONS[s]}" @click=${this.linkClick}>${s}</a>
         `)}
       </article>
     </header>

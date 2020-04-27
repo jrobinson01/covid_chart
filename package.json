@@ -8,11 +8,11 @@
     "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
-    "@open-wc/building-rollup": "^0.20.3",
-    "es-dev-server": "^1.38.3",
-    "koa-bodyparser": "^4.2.1",
-    "rimraf": "^3.0.1",
-    "rollup": "^1.31.0"
+    "@open-wc/building-rollup": "^1.2.0",
+    "deepmerge": "^4.2.2",
+    "es-dev-server": "^1.47.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.7.2"
   },
   "dependencies": {
     "chart.js": "^2.9.3",
