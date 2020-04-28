@@ -19,6 +19,8 @@ export default class StatePerDay extends LitElement {
   constructor() {
     super();
     this.chart = null;
+    this.selectedState = {};
+    this.stateData = {};
   }
 
   drawChart(selectedState, stateData) {

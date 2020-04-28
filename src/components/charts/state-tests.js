@@ -26,6 +26,8 @@ export default class StateTests extends LitElement {
     super();
     this.chart = null;
     this.stateData = {};
+    this.selectedState = null;
+    this.statePopData = {};
   }
 
   drawChart(stateData, statePopData) {
@@ -67,9 +69,9 @@ export default class StateTests extends LitElement {
     }
   }
 
-  updated() {
+  updated(changed) {
     this.drawChart(this.stateData, this.statePopData);
-    super.updated();
+    super.updated(changed);
   }
 
   render() {

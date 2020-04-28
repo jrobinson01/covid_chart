@@ -12,7 +12,11 @@ import {chartStyles, chartColors} from './chart-styles.js';
 
 export default class DeathsByCounty extends LitElement {
   static get styles() {
-    return chartStyles;
+    return [chartStyles, css`
+      article {
+        height: 1200px;
+      }
+    `];
   }
 
   static get properties() {
@@ -29,9 +33,17 @@ export default class DeathsByCounty extends LitElement {
   constructor() {
     super();
     this.chart = null;
+    /** @type {import('../../covid-charts-app').SelectedState} */
     this.selectedState = {};
+    /** @type {Array<import('../../lib/data-service').County>} */
+    this.countiesData = [];
   }
 
+  /**
+   * @description draw/redraw the chart
+   * @param {import('../../covid-charts-app').SelectedState} selectedState
+   * @param {Array<import('../../lib/data-service').County>} counties
+   */
   drawChart(selectedState, counties = []) {
     if (counties.length === 0 || !selectedState) {
       return;
@@ -44,11 +56,12 @@ export default class DeathsByCounty extends LitElement {
     const cases = data.map(c => c.cases);
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
-        type: 'bar',
+        type: 'horizontalBar',
         options: {
           legend: {
             display: true,
           },
+          maintainAspectRatio: false
         },
         data : {
           labels,
@@ -86,9 +99,9 @@ export default class DeathsByCounty extends LitElement {
     }
   }
 
-  updated() {
+  updated(changed) {
     this.drawChart(this.selectedState, this.countiesData);
-    super.updated();
+    super.updated(changed);
   }
 
   render() {

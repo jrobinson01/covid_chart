@@ -11,6 +11,11 @@ export default class GlobalView extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.statesData = [];
+  }
+
   render() {
     return html`
       <header>

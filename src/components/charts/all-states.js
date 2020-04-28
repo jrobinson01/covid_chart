@@ -18,6 +18,7 @@ export default class AllStates extends LitElement {
   constructor() {
     super();
     this.chart = null;
+    this.statesData = [];
   }
 
   drawChart( states = []) {
@@ -93,10 +94,9 @@ export default class AllStates extends LitElement {
     }
   }
 
-  updated() {
-    console.log('updated', this.statesData);
+  updated(changedProps) {
     this.drawChart(this.statesData);
-    super.updated();
+    super.updated(changedProps);
   }
 
   render() {

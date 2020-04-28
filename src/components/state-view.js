@@ -35,6 +35,9 @@ export default class StateView extends LitElement {
     this.selectedState = {
       name:'',
     };
+    this.countiesData = [];
+    this.populationData = [];
+    this.statesData = [];
   }
 
   get statePopData() {

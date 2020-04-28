@@ -2013,10 +2013,10 @@ levenary@^1.1.1:
   dependencies:
     leven "^3.1.0"
 
-lit-element-router@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/lit-element-router/-/lit-element-router-2.0.1.tgz#92d22ebd9db490aecc649e76a620eb811ec2f1aa"
-  integrity sha512-11n2MhR0r+/H1k/zSGC/0hRVAX39ba8axd60VvqpBY3NBYfVVtB69Uq8H6ki1alKPBzmzGaM8e611KnOLuqCKw==
+lit-element-router@^2.0.2:
+  version "2.0.2"
+  resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/lit-element-router/-/lit-element-router-2.0.2.tgz#44a4efc9a0063455aae9d61894c469d57d8ab260"
+  integrity sha1-RKTvyaAGNFWq6dYYlMRp1X2KsmA=
 
 lit-element@^2.3.1:
   version "2.3.1"
@@ -2798,6 +2798,11 @@ type-is@^1.6.16:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.24"
+
+typescript@^3.8.3:
+  version "3.8.3"
+  resolved "https://artifactory.banno-tools.com/artifactory/api/npm/npm/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha1-QJ64VE6gM1cRIFhp7EWKsQnuEGE=
 
 typical@^4.0.0:
   version "4.0.0"

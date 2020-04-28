@@ -51,7 +51,11 @@ const ABBREVIATIONS = {
   Wyoming: 'WY',
   'District of Columbia': 'DC',
 }
-
+/**
+ * @description get a state name from an abbreviation
+ * @param {string} abb
+ * @return {string}
+ */
 function stateFromAbb(abb) {
   let state;
   for(let [key, value] of Object.entries(ABBREVIATIONS)) {

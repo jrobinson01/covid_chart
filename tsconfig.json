@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "esNext",
+    "module": "esNext",
+    "lib": ["es2015", "dom", "es2016.array.include"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": false,
+    "moduleResolution": "node"
+  },
+  "include": ["./src/types/global.d.ts", "./src/covid-charts-app.js"],
+  "exclude": ["dist", "**config.js", "node_modules"]
+}

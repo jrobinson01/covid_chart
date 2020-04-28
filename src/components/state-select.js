@@ -49,6 +49,7 @@ export default class StateSelect extends navigator(LitElement) {
   constructor() {
     super();
     this.states = [];
+    this.selected = null;
   }
 
   linkClick(event) {
