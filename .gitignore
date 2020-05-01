@@ -4,3 +4,4 @@ dist
 firebase.json
 .firebase
 firebase-debug.log
+release.md
