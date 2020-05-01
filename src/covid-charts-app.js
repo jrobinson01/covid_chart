@@ -51,6 +51,13 @@ function selectCounty(detail, context) {
   };
 }
 
+function home(detail, context) {
+  return {
+    state: STATES.READY,
+    context: {...context, ...{selectedCounty:null, selectedState: null}}
+  }
+}
+
 export default class CovidChartsApp extends router(LitElement) {
 
   static get styles() {
@@ -165,6 +172,8 @@ export default class CovidChartsApp extends router(LitElement) {
       const fips = this.params.fips;
       const county = (this.context.counties || []).find(c => c.fips === fips);
       this.appMachine('selectCounty', {county});
+    } else if (this.route === 'home') {
+      this.appMachine('home');
     }
   }
 
@@ -201,6 +210,7 @@ export default class CovidChartsApp extends router(LitElement) {
       state(STATES.STATE_SELECTED, {
         selectState,
         selectCounty,
+        home,
       }, () => {
         // check route and params for county
         if (this.route === 'county') {
@@ -215,12 +225,26 @@ export default class CovidChartsApp extends router(LitElement) {
       state(STATES.COUNTY_SELECTED, {
         selectState,
         selectCounty,
+        home,
       })
     ], STATES.INITIAL, this.context, (newState) => {
       console.log('state changed:', newState);
       this.currentState = newState.state;
       this.context = newState.context;
+      this.setPageTitle(this.currentState, this.context);
     });
+  }
+
+  setPageTitle(currentState, context) {
+    // set the page title
+    const titleEl = document.head.querySelector('title');
+    if (currentState === STATES.STATE_SELECTED) {
+      titleEl.innerText = `Covid Charts: ${this.context.selectedState.name}`;
+    } else if (currentState === STATES.COUNTY_SELECTED) {
+      titleEl.innerText = `Covid Charts: ${this.context.selectedState.name} : ${this.context.selectedCounty.county}`;
+    } else {
+      titleEl.innerText = 'Covid Charts';
+    }
   }
 
   async loadData() {
