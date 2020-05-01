@@ -48,7 +48,9 @@ export default class StateSelect extends navigator(LitElement) {
 
   constructor() {
     super();
+    /** @type {!Array<string>} */
     this.states = [];
+    /** @type {string?} */
     this.selected = null;
   }
 

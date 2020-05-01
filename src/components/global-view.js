@@ -13,6 +13,7 @@ export default class GlobalView extends LitElement {
 
   constructor() {
     super();
+    /** @type {Array<import('../lib/data-service').USState>} */
     this.statesData = [];
   }
 

@@ -16,6 +16,9 @@ export default class DeathsByCounty extends LitElement {
       article {
         height: 1200px;
       }
+      canvas {
+        cursor: pointer;
+      }
     `];
   }
 
@@ -61,7 +64,18 @@ export default class DeathsByCounty extends LitElement {
           legend: {
             display: true,
           },
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          onClick: event => {
+            const els = this.chart.getElementsAtEventForMode(event, "y", 1);
+            if (els.length > 0) {
+              const county = data[els[0]._index];
+              this.dispatchEvent(new CustomEvent('county-selected', {
+                composed: true,
+                bubbles: true,
+                detail: county
+              }));
+            }
+          }
         },
         data : {
           labels,
@@ -80,6 +94,17 @@ export default class DeathsByCounty extends LitElement {
         }
       });
     } else {
+      this.chart.options.onClick = event => {
+        const els = this.chart.getElementsAtEventForMode(event, "y", 1);
+        if (els.length > 0) {
+          const county = data[els[0]._index];
+          this.dispatchEvent(new CustomEvent('county-selected', {
+            composed: true,
+            bubbles: true,
+            detail: county
+          }));
+        }
+      };
       this.chart.data = {
         labels,
         datasets: [

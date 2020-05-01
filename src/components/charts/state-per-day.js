@@ -29,41 +29,43 @@ export default class StatePerDay extends LitElement {
     }
     const deathsPerDay = stateData.map(s => s.deathIncrease);
     const hospPerDay = stateData.map(s => s.hospitalizedCurrently);
+    const icuCurrently = stateData.map(s => s.inIcuCurrently);
+    const positiveTestsPerDay = stateData.map(s => s.positiveIncrease);
     const labels = stateData.map(s => s.date);
+    const datasets = [
+      {
+        label:'Deaths per day',
+        data: deathsPerDay,
+        backgroundColor: chartColors.get('danger'),
+      },
+      {
+        label: 'Currently in ICU',
+        data: icuCurrently,
+        backgroundColor: chartColors.get('neutral'),
+      },
+      {
+        label: 'Positive tests per day',
+        data: positiveTestsPerDay,
+        backgroundColor: '#f2c288',
+      },
+      {
+        label: 'Currently hospitalized',
+        data: hospPerDay,
+        backgroundColor: chartColors.get('warning'),
+      },
+    ]
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'line',
         data: {
           labels,
-          datasets: [
-            {
-              label:'Deaths',
-              data: deathsPerDay,
-              backgroundColor: chartColors.get('danger'),
-            },
-            {
-              label: 'Hopitalized',
-              data: hospPerDay,
-              backgroundColor: chartColors.get('warning'),
-            }
-          ]
+          datasets
         }
       });
     } else {
       this.chart.data = {
         labels,
-        datasets: [
-          {
-            label: 'Deaths',
-            data: deathsPerDay,
-            backgroundColor: chartColors.get('danger'),
-          },
-          {
-            label: 'Hospitalized',
-            data: hospPerDay,
-            backgroundColor: chartColors.get('warning'),
-          }
-        ]
+        datasets
       };
       this.chart.update();
     }

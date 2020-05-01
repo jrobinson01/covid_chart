@@ -18,6 +18,7 @@ export default class AllStates extends LitElement {
   constructor() {
     super();
     this.chart = null;
+    /** @type {Array<import('../../lib/data-service').USState>} */
     this.statesData = [];
   }
 
@@ -79,7 +80,7 @@ export default class AllStates extends LitElement {
         labels,
         datasets: [
         {
-          label: 'cases',
+          label: 'hospitalized',
           backgroundColor: chartColors.get('warning'),
           data: cases,
         },
@@ -87,6 +88,16 @@ export default class AllStates extends LitElement {
           label: 'deaths',
           backgroundColor: chartColors.get('danger'),
           data: deaths,
+        },
+        {
+          label:'tests',
+          backgroundColor: chartColors.get('neutral'),
+          data: tests,
+        },
+        {
+          label:'recovered',
+          backgroundColor: chartColors.get('positive'),
+          data: recovered,
         },
       ],
       };

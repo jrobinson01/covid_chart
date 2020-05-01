@@ -73,14 +73,15 @@
 }
 
 async function loadCsvData() {
-  const counties = await d3.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv');
+  // counties data
+  const countiesRaw = await d3.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv');
   // population data
   const pops = await loadPopulationData();
   // only states, but has way more data
   const statesData = await d3.csv('https://covidtracking.com/api/v1/states/daily.csv');
 
   // precalculate unique state names
-  const stateNames = counties
+  const stateNames = countiesRaw
   .map(r => r.state)
   .reduce((acc, val, index, self) => {
     if (self.indexOf(val) < index) {
@@ -91,7 +92,7 @@ async function loadCsvData() {
   }, []).sort();
 
   // and counties by state
-  const stateCounties = counties.reduce((acc, val, index, self) => {
+  const stateCounties = countiesRaw.reduce((acc, val, index, self) => {
     if (!acc[val.state]) {
       acc[val.state] = [];
     }
@@ -100,6 +101,14 @@ async function loadCsvData() {
     }
     return acc;
   }, {});
+  // county routing relies on the fips key, which is sometimes empty.
+  // create one out of the county name and state
+  const counties = countiesRaw.map(c => {
+    if (c.fips === '') {
+      c.fips = `${c.state.replace(/ /g, '_')}_${c.county.replace(/ /g,'_')}`.toLowerCase();
+    }
+    return c;
+  });
 
   return {counties, states: stateNames, stateCounties, statesData, pops};
 }

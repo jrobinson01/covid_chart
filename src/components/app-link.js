@@ -6,10 +6,10 @@ export default class AppLink extends navigator(LitElement) {
   static get styles() {
     return css`
       a {
-        color: #FFFFFF;
+        color:var(--link-color, #FFFFFF);
       }
       a:visited {
-        color: #FFFFFF;
+        color: var(--link-color, #FFFFFF);
       }
     `;
   }

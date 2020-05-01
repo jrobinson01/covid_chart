@@ -1,10 +1,11 @@
 import {LitElement, html, css} from 'lit-element';
 import {router} from 'lit-element-router';
 import {machine, state} from 'fn-machine';
-import './components/state-select.js';
+import StateSelect from './components/state-select.js';
 import './components/global-view.js';
 import './components/app-views.js';
 import './components/state-view.js';
+import './components/county-view.js';
 import './components/app-link.js';
 import {loadCsvData} from './lib/data-service.js';
 
@@ -21,7 +22,7 @@ import {ABBREVIATIONS, stateFromAbb} from './lib/state-abbs.js';
   * @property {SelectedState} selectedState
   * @property {Array<import('./lib/data-service').Population>} pops
   * @property {Array<import('./lib/data-service').County>} counties
-  * @property {string} selectedCounty
+  * @property {import('./lib/data-service').County} selectedCounty
   * @property {Array<string>} states
   * @property {Array<import('./lib/data-service').USState>} statesData
   * @property {Object<string, Object>} stateCounties
@@ -206,7 +207,7 @@ export default class CovidChartsApp extends router(LitElement) {
           const fips = this.params.fips;
           const county = (this.context.counties || []).find(c => c.fips === fips);
           if (county) {
-            this.appMachine('selectCounty', {county: county.county});
+            this.appMachine('selectCounty', {county: county});
           }
 
         }
@@ -219,7 +220,7 @@ export default class CovidChartsApp extends router(LitElement) {
       console.log('state changed:', newState);
       this.currentState = newState.state;
       this.context = newState.context;
-    })
+    });
   }
 
   async loadData() {
@@ -227,53 +228,12 @@ export default class CovidChartsApp extends router(LitElement) {
     this.appMachine('loaded', data);
   }
 
-  // async loadPopulationData() {
-  //   try {
-  //     const pops = localStorage.getItem('population-data');
-  //     if (pops) {
-  //       return Promise.resolve(JSON.parse(pops));
-  //     } else {
-  //       // load and store in localStorage
-  //       const pops = await d3.csv('/data/populations-by-county-est2019_min.csv');
-  //       localStorage.setItem('population-data',JSON.stringify(pops));
-  //       return pops;
-  //     }
-  //   } catch(e) {
-  //     console.error('error with localStorage', e);
-  //     // incognito most likely. just load it.
-  //     return await d3.csv('/data/populations-by-county-est2019_min.csv');
-  //   }
-  // }
-
-  // async loadCsvData() {
-  //   const counties = await d3.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv');
-  //   // population data
-  //   const pops = await this.loadPopulationData();//await d3.csv('data/populations-by-county-est2019.csv');
-  //   // only states, but has way more data
-  //   const statesData = await d3.csv('https://covidtracking.com/api/v1/states/daily.csv');
-  //   // precalculate unique state names
-  //   const stateNames = counties
-  //   .map(r => r.state)
-  //   .reduce((acc, val, index, self) => {
-  //     if (self.indexOf(val) < index) {
-  //       return acc;
-  //     }
-  //     acc.push(val);
-  //     return acc;
-  //   }, []).sort();
-  //   // and counties by state
-  //   const stateCounties = counties.reduce((acc, val, index, self) => {
-  //     if (!acc[val.state]) {
-  //       acc[val.state] = [];
-  //     }
-  //     if (!acc[val.state].find(c => c.county === val.county)) {
-  //       acc[val.state].push(val);
-  //     }
-  //     return acc;
-  //   }, {});
-
-  //   this.appMachine('loaded', {counties, states:stateNames, stateCounties, statesData, pops});
-  // }
+  get selectedCountyData() {
+    if (!this.context.selectedState || !this.context.selectedCounty) {
+      return [];
+    }
+    return this.context.counties.filter(c => c.state === this.context.selectedState.name && c.county === this.context.selectedCounty.county);
+  }
 
   render() {
     if (this.currentState === STATES.LOADING_CSVS || this.currentState === STATES.INITIAL) {
@@ -298,7 +258,10 @@ export default class CovidChartsApp extends router(LitElement) {
           .statesData=${this.context.statesData}
           .populationData=${this.context.pops}>
         </state-view>
-        <county-view route="county"></county-view>
+        <county-view route="county"
+        .selectedCounty=${this.context.selectedCounty}
+        .countiesData=${this.selectedCountyData}
+        .selectedState=${this.context.selectedState}></county-view>
       </app-views>
     </article>
     <footer>Covid charts is an <a href="https://github.com/jrobinson01/covid_chart">open-source project.</a></footer>
