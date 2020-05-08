@@ -9,9 +9,15 @@ export default class StateSelect extends navigator(LitElement) {
       states: {
         type: Array
       },
-      selected: {
+      stateCounties: {
+        type: Object,
+      },
+      selectedState: {
         type: String,
       },
+      selectedCounty: {
+        type: String,
+      }
     }
   }
 
@@ -33,14 +39,32 @@ export default class StateSelect extends navigator(LitElement) {
       background-color: #CCCCCC;
       border-bottom: 2px solid white;
     }
+    .county-row {
+      font-size: 12px;
+      display: block;
+      padding: 10px;
+      background-color: #FFFFFF;
+      border-bottom: 2px solid #CCCCCC;
+      padding-left: 24px;
+    }
     .selected {
       background-color: #666666;
       color: #FFFFFF;
     }
-    .selected a {
+    a.selected {
       color: white;
     }
-    .selected a:visited {
+    a:visited.selected {
+      color: white;
+    }
+    a.selected-county {
+      color: white;
+    }
+    a:visited.selected-county {
+      color: white;
+    }
+    .selected-county {
+      background-color: #666666;
       color: white;
     }
     `;
@@ -51,12 +75,19 @@ export default class StateSelect extends navigator(LitElement) {
     /** @type {!Array<string>} */
     this.states = [];
     /** @type {string?} */
-    this.selected = null;
+    this.selectedState = null;
+    this.selectedCounty = null;
+    this.stateCounties = {};
   }
 
   linkClick(event) {
     event.preventDefault();
+    console.log('navigate', event.currentTarget.href);
     this.navigate(event.currentTarget.href);
+  }
+
+  getCountiesForState(state) {
+    return this.stateCounties[state];
   }
 
   render() {
@@ -65,7 +96,15 @@ export default class StateSelect extends navigator(LitElement) {
       <h3>Select a state</h3>
       <article>
       ${this.states.map(s => html`
-          <a class="row ${s === this.selected ? 'selected' : ''}" href="/state/${ABBREVIATIONS[s]}" @click=${this.linkClick}>${s}</a>
+          <a class="row ${s === this.selectedState ? 'selected' : ''}" href="/state/${ABBREVIATIONS[s]}" @click=${this.linkClick}>${s}</a>
+          ${s === this.selectedState ? html`
+            ${this.getCountiesForState(this.selectedState).map(c => html`
+            <a class="county-row ${c.county === this.selectedCounty ? 'selected-county': ''}"
+              href="/state/${ABBREVIATIONS[this.selectedState]}/county/${c.fips}"
+              @click=${this.linkClick}>
+              ${c.county}
+            </a>`
+            )}` : ''}
         `)}
       </article>
     </header>

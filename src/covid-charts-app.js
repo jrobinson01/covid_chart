@@ -76,24 +76,27 @@ export default class CovidChartsApp extends router(LitElement) {
         padding: 12px;
         background-color: #666666;
         color: #FFFFFF;
+        height: 48px;
       }
-
       .sidebar {
         height: 100vh;
         overflow-y: scroll;
         grid-area: sidebar;
       }
-
       article {
         grid-area: content;
+        margin: 8px;
       }
-
       footer {
         padding: 12px;
         background-color: #666666;
         color: #FFFFFF;
         grid-area: footer;
         display: block;
+      }
+      footer a {
+        text-decoration:none;
+        color: white;
       }
     `;
   }
@@ -159,9 +162,14 @@ export default class CovidChartsApp extends router(LitElement) {
   }
 
   router(route, params, query, data) {
+    // // ignore if route didn't actually change
+    // if (route === this.route && (params.abb === this.params.abb || params.fips === this.params.fips)) {
+    //   return;
+    // }
     this.route = route;
     this.params = params;
     this.query = query;
+    console.log('router', route, params, query, data);
     if (this.route === 'state') {
       // select state name via abbreviation
       const abb = this.params.abb;
@@ -237,13 +245,13 @@ export default class CovidChartsApp extends router(LitElement) {
 
   setPageTitle(currentState, context) {
     // set the page title
-    const titleEl = document.head.querySelector('title');
+    // const titleEl = document.head.querySelector('title');
     if (currentState === STATES.STATE_SELECTED) {
-      titleEl.innerText = `Covid Charts: ${this.context.selectedState.name}`;
+      document.title = `Covid Charts: ${this.context.selectedState.name}`;
     } else if (currentState === STATES.COUNTY_SELECTED) {
-      titleEl.innerText = `Covid Charts: ${this.context.selectedState.name} : ${this.context.selectedCounty.county}`;
+      document.title = `Covid Charts: ${this.context.selectedState.name} : ${this.context.selectedCounty.county}`;
     } else {
-      titleEl.innerText = 'Covid Charts';
+      document.title = 'Covid Charts';
     }
   }
 
@@ -269,7 +277,9 @@ export default class CovidChartsApp extends router(LitElement) {
     <div class="sidebar">
       <state-select
         .states=${this.context.states}
-        .selected=${this.context.selectedState && this.context.selectedState.name}>
+        .selectedState=${this.context.selectedState && this.context.selectedState.name}
+        .selectedCounty=${this.context.selectedCounty && this.context.selectedCounty.county}
+        .stateCounties=${this.context.stateCounties}>
       </state-select>
     </div>
     <article>

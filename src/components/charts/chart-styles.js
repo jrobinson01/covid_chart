@@ -3,6 +3,12 @@ const chartStyles = css`
   :host {
     display: block;
   }
+  header h4 {
+    margin-block-end: .3em;
+  }
+  header p {
+    font-size: 11px;
+  }
   footer {
     text-align: right;
     font-size: 11px;

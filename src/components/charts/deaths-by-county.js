@@ -16,9 +16,6 @@ export default class DeathsByCounty extends LitElement {
       article {
         height: 1200px;
       }
-      canvas {
-        cursor: pointer;
-      }
     `];
   }
 
@@ -53,7 +50,7 @@ export default class DeathsByCounty extends LitElement {
     }
     const currentDate = counties[counties.length-1].date;
     const data = counties.filter(c =>
-      c.state === selectedState.name && c.date === currentDate && parseFloat(c.cases) > 0);
+      c.state === selectedState.name && c.date === currentDate).sort((a,b) => parseFloat(b.cases) - parseFloat(a.cases));
     const labels = data.map(c => c.county);
     const deaths = data.map(c => c.deaths);
     const cases = data.map(c => c.cases);
@@ -65,17 +62,6 @@ export default class DeathsByCounty extends LitElement {
             display: true,
           },
           maintainAspectRatio: false,
-          onClick: event => {
-            const els = this.chart.getElementsAtEventForMode(event, "y", 1);
-            if (els.length > 0) {
-              const county = data[els[0]._index];
-              this.dispatchEvent(new CustomEvent('county-selected', {
-                composed: true,
-                bubbles: true,
-                detail: county
-              }));
-            }
-          }
         },
         data : {
           labels,
@@ -94,17 +80,6 @@ export default class DeathsByCounty extends LitElement {
         }
       });
     } else {
-      this.chart.options.onClick = event => {
-        const els = this.chart.getElementsAtEventForMode(event, "y", 1);
-        if (els.length > 0) {
-          const county = data[els[0]._index];
-          this.dispatchEvent(new CustomEvent('county-selected', {
-            composed: true,
-            bubbles: true,
-            detail: county
-          }));
-        }
-      };
       this.chart.data = {
         labels,
         datasets: [
@@ -132,13 +107,12 @@ export default class DeathsByCounty extends LitElement {
   render() {
     return html`
       <header>
-        <h4>By county</h4>
+        <h4>Total cases and deaths by county</h4>
       </header>
       <article>
         <canvas></canvas>
       </article>
       <footer>
-        <p>* counties with 0 reported cases ommitted</p>
         <p>data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">The New York Times</a></p>
       </footer>
     `;

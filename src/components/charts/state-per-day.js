@@ -29,7 +29,6 @@ export default class StatePerDay extends LitElement {
     }
     const deathsPerDay = stateData.map(s => s.deathIncrease);
     const hospPerDay = stateData.map(s => s.hospitalizedCurrently);
-    const icuCurrently = stateData.map(s => s.inIcuCurrently);
     const positiveTestsPerDay = stateData.map(s => s.positiveIncrease);
     const labels = stateData.map(s => s.date);
     const datasets = [
@@ -37,11 +36,6 @@ export default class StatePerDay extends LitElement {
         label:'Deaths per day',
         data: deathsPerDay,
         backgroundColor: chartColors.get('danger'),
-      },
-      {
-        label: 'Currently in ICU',
-        data: icuCurrently,
-        backgroundColor: chartColors.get('neutral'),
       },
       {
         label: 'Positive tests per day',

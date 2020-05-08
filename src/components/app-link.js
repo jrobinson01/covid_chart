@@ -7,6 +7,7 @@ export default class AppLink extends navigator(LitElement) {
     return css`
       a {
         color:var(--link-color, #FFFFFF);
+        text-decoration: none;
       }
       a:visited {
         color: var(--link-color, #FFFFFF);
