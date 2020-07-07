@@ -28,7 +28,7 @@ export default class CountyCasesDeathsByDay extends LitElement {
     const datasets = [
       {
         label: 'deaths',
-        backgroundColor: chartColors.get('danger'),
+        borderColor: chartColors.get('danger'),
         data: county.map((c, index, self) => {
           const value = index > 0 ? parseFloat(c.deaths) - parseFloat(self[index-1].deaths) : c.deaths;
           return value > 0 ? value : 0;
@@ -36,7 +36,7 @@ export default class CountyCasesDeathsByDay extends LitElement {
       },
       {
         label: 'cases',
-        backgroundColor: chartColors.get('warning'),
+        borderColor: chartColors.get('warning'),
         data: county.map((c, index, self) => {
           const value = index > 0 ? parseFloat(c.cases) - parseFloat(self[index-1].cases) : c.cases;
           return value > 0 ? value : 0;

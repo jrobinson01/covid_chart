@@ -42,11 +42,12 @@ export default class AllStates extends LitElement {
       return acc;
     }, [])
     .sort((a,b) => parseFloat(b.death) - parseFloat(a.death));
-    const labels = perState.map(s => stateFromAbb(s.state));
-    const cases = perState.map(s => s.hospitalizedCumulative);
+    const labels = perState.map(s => {
+      const abb = stateFromAbb(s.state);
+      return abb ? abb : s.state;
+    });
+    const cases = perState.map(s => s.positive);
     const deaths = perState.map(s => s.death);
-    const tests =  perState.map(s => s.totalTestResults);
-    const recovered = perState.map(s => s.recovered);
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'horizontalBar',
@@ -60,7 +61,7 @@ export default class AllStates extends LitElement {
           labels,
           datasets: [
           {
-            label:'hospitalized',
+            label:'positive cases',
             backgroundColor: chartColors.get('warning'),
             data: cases,
           },
@@ -68,16 +69,6 @@ export default class AllStates extends LitElement {
             label:'deaths',
             backgroundColor: chartColors.get('danger'),
             data: deaths,
-          },
-          {
-            label:'tests',
-            backgroundColor: chartColors.get('neutral'),
-            data: tests,
-          },
-          {
-            label:'recovered',
-            backgroundColor: chartColors.get('positive'),
-            data: recovered,
           },
         ],
         }
@@ -87,7 +78,7 @@ export default class AllStates extends LitElement {
         labels,
         datasets: [
         {
-          label: 'hospitalized',
+          label: 'positive cases',
           backgroundColor: chartColors.get('warning'),
           data: cases,
         },
@@ -95,16 +86,6 @@ export default class AllStates extends LitElement {
           label: 'deaths',
           backgroundColor: chartColors.get('danger'),
           data: deaths,
-        },
-        {
-          label:'tests',
-          backgroundColor: chartColors.get('neutral'),
-          data: tests,
-        },
-        {
-          label:'recovered',
-          backgroundColor: chartColors.get('positive'),
-          data: recovered,
         },
       ],
       };
@@ -120,7 +101,8 @@ export default class AllStates extends LitElement {
   render() {
     return html`
       <header>
-        <h4>By state</h4>
+        <h4>Deaths and cases by state to date</h4>
+        <p>highest deaths first</p>
       </header>
       <article>
         <canvas></canvas>

@@ -20,18 +20,26 @@ export default class UsHistoric extends LitElement {
   }
 
   drawChart(usHistoryData = []) {
-    const labels = usHistoryData.map(c => c.date).reverse();
+    const labels = usHistoryData.map(c => {
+      const day = c.date.substring(6);
+      const month = c.date.substring(4,6);
+      const year = c.date.substring(0,4);
+      const date = new Date(`${month}-${day}-${year}`);
+      return date.toLocaleDateString();
+    }).reverse();
     const datasets = [
       {
         label: 'deaths per day',
-        backgroundColor: chartColors.get('danger'),
+        borderColor: chartColors.get('danger'),
         data: usHistoryData.map(c => c.deathIncrease).reverse(),
+        pointRadius: 0,
       },
       {
         label: 'positive tests per day',
-        backgroundColor: chartColors.get('warning'),
+        borderColor: chartColors.get('warning'),
         data: usHistoryData.map(c => c.positiveIncrease).reverse(),
-      }
+        pointRadius: 0,
+      },
     ];
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
@@ -69,8 +77,7 @@ export default class UsHistoric extends LitElement {
         <h4>US Cases and deaths per day</h4>
       </header>
       <article>
-        <p>death rate</p>
-        ${this.deathRate}%
+        death rate: <strong>${this.deathRate}%</strong>
         <canvas></canvas>
       </article>
       <footer>

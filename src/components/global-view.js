@@ -25,7 +25,7 @@ export default class GlobalView extends LitElement {
   render() {
     return html`
       <header>
-        <h3>All states</h3>
+        <h3>US Overall</h3>
       </header>
       <article>
         <us-historic .usHistoryData=${this.usData}></us-historic>

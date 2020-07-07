@@ -157,6 +157,7 @@ export default class CovidChartsApp extends router(LitElement) {
     };
     // set Chart defaults
     Chart.defaults.global.defaultFontFamily = 'Roboto, Arial, sans-serif';
+    Chart.defaults.global.datasets.line = {pointRadius:1};
     this.initMachine();
     const currentState = this.appMachine('load');
     this.currentState = currentState.state;

@@ -34,12 +34,12 @@ export default class StatePerDay extends LitElement {
       {
         label:'Deaths per day',
         data: deathsPerDay,
-        backgroundColor: chartColors.get('danger'),
+        borderColor: chartColors.get('danger'),
       },
       {
         label: 'Positive tests per day',
         data: positiveTestsPerDay,
-        backgroundColor: chartColors.get('warning'),
+        borderColor: chartColors.get('warning'),
       },
     ]
     if (!this.chart) {
