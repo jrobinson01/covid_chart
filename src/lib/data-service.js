@@ -79,7 +79,8 @@ async function loadCsvData() {
   const pops = await loadPopulationData();
   // only states, but has way more data
   const statesData = await d3.csv('https://covidtracking.com/api/v1/states/daily.csv');
-
+  // us historic data
+  const usData = await loadUsData();
   // precalculate unique state names
   const stateNames = countiesRaw
   .map(r => r.state)
@@ -110,7 +111,13 @@ async function loadCsvData() {
     return c;
   });
 
-  return {counties, states: stateNames, stateCounties, statesData, pops};
+  return {counties, states: stateNames, stateCounties, statesData, pops, usData};
+}
+
+async function loadUsData() {
+  const usData = await d3.csv('https://covidtracking.com/api/v1/us/daily.csv');
+  console.log('loadedUsData', usData);
+  return usData;
 }
 
 export {loadCsvData};

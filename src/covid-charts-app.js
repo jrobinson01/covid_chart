@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit-element';
 import {router} from 'lit-element-router';
 import {machine, state} from 'fn-machine';
-import StateSelect from './components/state-select.js';
+import './components/state-select.js';
 import './components/global-view.js';
 import './components/app-views.js';
 import './components/state-view.js';
@@ -26,6 +26,7 @@ import {ABBREVIATIONS, stateFromAbb} from './lib/state-abbs.js';
   * @property {Array<string>} states
   * @property {Array<import('./lib/data-service').USState>} statesData
   * @property {Object<string, Object>} stateCounties
+  * @property {Array<Object>} usData
   */
 
 const STATES = {
@@ -151,7 +152,8 @@ export default class CovidChartsApp extends router(LitElement) {
       selectedState: null,
       stateCounties: {},
       states: [],
-      statesData: []
+      statesData: [],
+      usData: [],
     };
     // set Chart defaults
     Chart.defaults.global.defaultFontFamily = 'Roboto, Arial, sans-serif';
@@ -284,7 +286,7 @@ export default class CovidChartsApp extends router(LitElement) {
     </div>
     <article>
       <app-views active-route=${this.route}>
-        <global-view route="home" .statesData=${this.context.statesData}></global-view>
+        <global-view route="home" .statesData=${this.context.statesData} .usData=${this.context.usData}></global-view>
         <state-view
           route="state"
           .selectedState=${this.context.selectedState}

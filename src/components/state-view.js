@@ -4,6 +4,7 @@ import './charts/deaths-by-county.js';
 import './charts/state-tests.js';
 import './charts/state-per-day.js';
 import './charts/state-county-cases.js';
+import './state-pop-info.js';
 
 export default class StateView extends LitElement {
 
@@ -67,6 +68,10 @@ export default class StateView extends LitElement {
       <h3>${this.selectedState ? this.selectedState.name : ''}</h3>
     </header>
     <article>
+      <state-pop-info
+      .population=${this.statePopData}
+      .stateData=${this.currentStateData}>
+      </state-pop-info>
       <state-per-day .stateData=${this.stateData} .selectedState=${this.selectedState}></state-per-day>
       <state-tests .statePopData=${this.statePopData} .stateData=${this.currentStateData} .selectedState=${this.selectedState}></state-tests>
       <state-county-cases .countiesData=${this.countiesData} .selectedState=${this.selectedState}></state-county-cases>
