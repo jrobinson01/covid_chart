@@ -77,7 +77,7 @@ export default class UsHistoric extends LitElement {
         <h4>US Cases and deaths per day</h4>
       </header>
       <article>
-        death rate: <strong>${this.deathRate}%</strong>
+        case fatality rate: <strong>${this.deathRate}%</strong>
         <canvas></canvas>
       </article>
       <footer>

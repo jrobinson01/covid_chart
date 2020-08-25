@@ -28,7 +28,7 @@ export default class StatePopInfo extends LitElement {
   render() {
     return html`
     <div>
-      <div>Covid death rate: <strong>${this.covidDeathRate}%</strong></div>
+      <div>Covid case fatality rate: <strong>${this.covidDeathRate}%</strong></div>
       <div>Covid deaths: <strong>${this.stateData.death}</strong></div>
     </div>
     <div>
