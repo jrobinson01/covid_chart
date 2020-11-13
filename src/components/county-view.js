@@ -43,8 +43,8 @@ export default class CountyView extends LitElement {
       <h3>${this.selectedState? html`<app-link href="/state/${this.selectedState.abbreviation}">${this.selectedState.name}</app-link>` : ''} : ${this.selectedCounty ? this.selectedCounty.county : ''}</h3>
     </header>
     <article>
-      <county-cases-deaths .county=${this.selectedCountyData} .selectedCounty=${this.selectedCounty}></county-cases-deaths>
       <county-cases-deaths-by-day .county=${this.selectedCountyData} .selectedCounty=${this.selectedCounty}></county-cases-deaths-by-day>
+      <county-cases-deaths .county=${this.selectedCountyData} .selectedCounty=${this.selectedCounty}></county-cases-deaths>
     </article>
     `;
   }

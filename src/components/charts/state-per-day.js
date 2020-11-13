@@ -23,13 +23,17 @@ export default class StatePerDay extends LitElement {
     this.stateData = {};
   }
 
+  // TODO: use  positive tests percentage of total?
   drawChart(selectedState, stateData) {
     if (!selectedState || !stateData) {
       return;
     }
     const deathsPerDay = stateData.map(s => s.deathIncrease);
     const positiveTestsPerDay = stateData.map(s => s.positiveIncrease);
+    const hospitalized = stateData.map(s => s.hospitalizedIncrease);
     const labels = stateData.map(s => s.date);
+    const totalTestsPerDay = stateData.map(s => s.totalTestResultsIncrease);
+    const positivePercent = stateData.map(s => 100/(s.totalTestResultsIncrease/s.positiveIncrease));
     const datasets = [
       {
         label:'Deaths per day',
@@ -39,7 +43,22 @@ export default class StatePerDay extends LitElement {
       {
         label: 'Positive tests per day',
         data: positiveTestsPerDay,
+        borderColor: chartColors.get('neutral'),
+      },
+      {
+        label: 'hospitalized per day',
+        data: hospitalized,
         borderColor: chartColors.get('warning'),
+      },
+      {
+        label: 'total tests per day',
+        data: totalTestsPerDay,
+        borderColor: chartColors.get('positive'),
+      },
+      {
+        label: 'positive percentage',
+        data: positivePercent,
+        borderColor: chartColors.get('danger'),
       },
     ]
     if (!this.chart) {

@@ -36,10 +36,28 @@ export default class UsHistoric extends LitElement {
       },
       {
         label: 'positive tests per day',
-        borderColor: chartColors.get('warning'),
+        borderColor: chartColors.get('neutral'),
         data: usHistoryData.map(c => c.positiveIncrease).reverse(),
         pointRadius: 0,
       },
+      {
+        label: 'hospitalized per day',
+        borderColor: chartColors.get('warning'),
+        data: usHistoryData.map(c => c.hospitalizedIncrease).reverse(),
+        pointRadius: 0,
+      },
+      {
+        label: 'total tests per day',
+        borderColor: chartColors.get('positive'),
+        data: usHistoryData.map(c => c.totalTestResultsIncrease).reverse(),
+        pointRadius: 0,
+      },
+      {
+        label: 'positive percent per day',
+        borderColor: chartColors.get('negative'),
+        data: usHistoryData.map(c => 100/(c.totalTestResultsIncrease/c.positiveIncrease)).reverse(),
+        pointRadius: 0,
+      }
     ];
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
