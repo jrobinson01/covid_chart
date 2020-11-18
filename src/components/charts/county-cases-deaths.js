@@ -29,11 +29,13 @@ export default class CountyCasesDeaths extends LitElement {
       {
         label: 'deaths',
         borderColor: chartColors.get('danger'),
+        fill: false,
         data: county.map(c => c.deaths),
       },
       {
         label: 'cases',
         borderColor: chartColors.get('warning'),
+        fill: false,
         data: county.map(c => c.cases),
       },
     ];

@@ -20,6 +20,7 @@ const chartColors = new Map([
   ['danger', '#eb5334'], // red
   ['warning', '#eb9834'], // orange
   ['neutral', '#e0cfe6'], // purple-ish gray
+  ['neutral2', '#34abeb'],// blue-ish gray
 ]);
 
 export {chartStyles, chartColors};

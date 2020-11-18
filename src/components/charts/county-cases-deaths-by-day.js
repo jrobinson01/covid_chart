@@ -3,7 +3,11 @@ import { chartColors, chartStyles } from './chart-styles';
 
 export default class CountyCasesDeathsByDay extends LitElement {
   static get styles() {
-    return [chartStyles];
+    return [chartStyles, css`
+      input {
+        width: 100%;
+      }
+    `];
   }
   static get properties() {
     return {
@@ -13,6 +17,9 @@ export default class CountyCasesDeathsByDay extends LitElement {
       selectedCounty: {
         type: Object
       },
+      minIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -21,24 +28,32 @@ export default class CountyCasesDeathsByDay extends LitElement {
     this.chart = null;
     this.county = [];
     this.selectedCounty = {};
+    this.minIndex = 0;
+  }
+
+  onRangeChange(event) {
+    this.minIndex = event.currentTarget.value;
   }
 
   drawChart(county = []) {
-    const labels = county.map(c => c.date);
+    const filtered = county.slice(this.minIndex);
+    const labels = filtered.map(c => c.date);
     const datasets = [
       {
         label: 'deaths',
         borderColor: chartColors.get('danger'),
-        data: county.map((c, index, self) => {
-          const value = index > 0 ? parseFloat(c.deaths) - parseFloat(self[index-1].deaths) : c.deaths;
+        fill: false,
+        data: filtered.map((c, index, self) => {
+          const value = index > 0 ? parseFloat(c.deaths) - parseFloat(self[index-1].deaths) : 0;
           return value > 0 ? value : 0;
         }),
       },
       {
         label: 'cases',
         borderColor: chartColors.get('warning'),
-        data: county.map((c, index, self) => {
-          const value = index > 0 ? parseFloat(c.cases) - parseFloat(self[index-1].cases) : c.cases;
+        fill: false,
+        data: filtered.map((c, index, self) => {
+          const value = index > 0 ? parseFloat(c.cases) - parseFloat(self[index-1].cases) : 0;
           return value > 0 ? value : 0;
         }),
       },
@@ -52,11 +67,18 @@ export default class CountyCasesDeathsByDay extends LitElement {
         }
       })
     } else {
-      this.chart.data = {
-        labels,
-        datasets
-      };
-      this.chart.update();
+      // this.chart.data = {
+      //   labels,
+      //   datasets
+      // };
+      this.chart.data.labels = labels;
+      this.chart.data.datasets.forEach(d => {
+        const newData = datasets.find(ds => ds.label === d.label);
+        if (newData) {
+          d.data = newData.data;
+        }
+      });
+      this.chart.update(0);
     }
   }
 
@@ -72,6 +94,7 @@ export default class CountyCasesDeathsByDay extends LitElement {
       </header>
       <article>
         <canvas></canvas>
+        <input type="range" min=0 max=${this.county.length} value=${this.minIndex} @input=${event => this.onRangeChange(event)}></input>
       </article>
       <footer>
       <p>data from <a href="https://github.com/nytimes/covid-19-data#county-level-data">The New York Times</a></p>
