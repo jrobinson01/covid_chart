@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit-element';
 import './charts/all-states.js';
 import './charts/us-historic.js';
-
+import './charts/us-rates.js';
 export default class GlobalView extends LitElement {
 
   static get properties() {
@@ -29,6 +29,7 @@ export default class GlobalView extends LitElement {
       </header>
       <article>
         <us-historic .usHistoryData=${this.usData}></us-historic>
+        <us-rates .usHistoryData=${this.usData}></us-rates>
         <all-states .statesData=${this.statesData}></all-states>
       </article>
     `;

@@ -101,8 +101,8 @@ export default class AllStates extends LitElement {
   render() {
     return html`
       <header>
-        <h4>Deaths and cases by state to date</h4>
-        <p>highest deaths first</p>
+        <h4>Total deaths and cases by state</h4>
+        <p>sorted by highest deaths first</p>
       </header>
       <article>
         <canvas></canvas>

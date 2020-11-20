@@ -108,6 +108,7 @@ export default class DeathsByCounty extends LitElement {
     return html`
       <header>
         <h4>Total cases and deaths by county</h4>
+        <p>* sorted by deaths first</p>
       </header>
       <article>
         <canvas></canvas>

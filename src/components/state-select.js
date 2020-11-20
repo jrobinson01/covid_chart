@@ -82,7 +82,6 @@ export default class StateSelect extends navigator(LitElement) {
 
   linkClick(event) {
     event.preventDefault();
-    console.log('navigate', event.currentTarget.href);
     this.navigate(event.currentTarget.href);
   }
 

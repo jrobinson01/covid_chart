@@ -1,7 +1,8 @@
 import {LitElement, html, css} from 'lit-element';
 import { chartColors, chartStyles } from './chart-styles';
+import {sma} from '../../lib/chart-helpers.js';
 
-export default class UsHistoric extends LitElement {
+export default class UsRates extends LitElement {
   static get styles() {
     return [chartStyles, css`
       input {
@@ -25,10 +26,12 @@ export default class UsHistoric extends LitElement {
     this.chart = null;
     this.usHistoryData = [];
     this.minIndex = 0;
+    this.deathRateLag = 14;
   }
 
   drawChart(usHistoryData = []) {
-    const filtered = usHistoryData.slice().reverse().slice(this.minIndex);
+    const usData = usHistoryData.slice().reverse();
+    const filtered = usData.slice(this.minIndex);
     const labels = filtered.map(c => {
       const day = c.date.substring(6);
       const month = c.date.substring(4,6);
@@ -38,26 +41,28 @@ export default class UsHistoric extends LitElement {
     });
     const datasets = [
       {
-        label: 'deaths per day',
+        label: '* death rate per day',
         borderColor: chartColors.get('danger'),
         fill: false,
-        data: filtered.map(c => c.deathIncrease),
+        data: sma(filtered.map((c, index) => {
+          const past = usData[this.minIndex + index - this.deathRateLag];
+          if (past) {
+            const p = 100 / (past.positiveIncrease/c.deathIncrease);
+            return p > 0 ? p : 0;
+          }
+          return 0;
+        }), 7),
         pointRadius: 0,
+        spanGaps: true,
       },
       {
-        label: 'positive tests per day',
-        borderColor: chartColors.get('neutral'),
+        label: 'positive percent per day',
+        borderColor: chartColors.get('neutral2'),
         fill: false,
-        data: filtered.map(c => c.positiveIncrease),
+        data: sma(filtered.map(c => 100/(c.totalTestResultsIncrease/c.positiveIncrease)), 7),
         pointRadius: 0,
-      },
-      {
-        label: 'total tests per day',
-        borderColor: chartColors.get('positive'),
-        fill: false,
-        data: filtered.map(c => c.totalTestResultsIncrease),
-        pointRadius: 0,
-      },
+        spanGaps: true,
+      }
     ];
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
@@ -85,25 +90,15 @@ export default class UsHistoric extends LitElement {
     super.updated(changed);
   }
 
-  get deathRate() {
-    const last = this.usHistoryData[0];
-    const past = this.usHistoryData[13];
-    if (last) {
-      return (100 / (parseFloat(past.positive) / parseFloat(last.death))).toFixed(2);
-    }
-    return 0;
-  }
-
   onSliderChange(event) {
-    this.minIndex = event.currentTarget.value;
+    this.minIndex = Number(event.currentTarget.value);
   }
 
   render() {
     return html`
       <header>
-        <h4>US cases and deaths per day</h4>
-        <p>case fatality rate: <strong>${this.deathRate}%</strong></p>
-        <p> * calculated as current deaths percentage of positive tests from 2 weeks ago.</p>
+        <h4>US positivity and * death rates per day (7 day moving average)</h4>
+        <p> * death rates typically lag behind positive cases. The rate calculated here is done by comparing the current day's deaths, to the positive test count from the day 2 weeks prior. This is not guaranteed to be accurate.</p>
       </header>
       <article>
         <canvas></canvas>
@@ -117,4 +112,4 @@ export default class UsHistoric extends LitElement {
 
 }
 
-customElements.define('us-historic', UsHistoric);
+customElements.define('us-rates', UsRates);

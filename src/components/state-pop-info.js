@@ -3,10 +3,8 @@ import {LitElement, html,css} from 'lit-element';
 export default class StatePopInfo extends LitElement {
   static get styles() {
     return css`
-      :host {
-        display: flex;
-        justify-content: space-between;
-        width: 40%;
+      div {
+        font-size: 12px;
       }
     `;
   }
@@ -21,20 +19,20 @@ export default class StatePopInfo extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.population = {};
+    this.stateData = {};
+  }
+
   get covidDeathRate() {
     return (100/ (this.stateData.positive / this.stateData.death)).toFixed(2);
   }
 
   render() {
     return html`
-    <div>
-      <div>Covid case fatality rate: <strong>${this.covidDeathRate}%</strong></div>
-      <div>Covid deaths: <strong>${this.stateData.death}</strong></div>
-    </div>
-    <div>
-      <div>2019 death rate: <strong>${parseFloat(this.population.RDEATH2019).toFixed(2)}%</strong></div>
-      <div>2019 deaths: <strong>${this.population.DEATHS2019}</strong></div>
-    </div>
+      <div>Covid deaths: ${this.stateData.death}</div>
+      <div>2019 deaths: ${this.population.DEATHS2019}</div>
     `;
   }
 }

@@ -276,7 +276,7 @@ export default class CovidChartsApp extends router(LitElement) {
     }
 
     return html`
-    <header><app-link href="/">US state by state Covid-19 Charts</app-link></header>
+    <header><app-link href="/">US state by state covid-19 charts</app-link></header>
     <div class="sidebar">
       <state-select
         .states=${this.context.states}

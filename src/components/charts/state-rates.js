@@ -1,10 +1,12 @@
 import {LitElement, html, css} from 'lit-element';
 import {chartStyles, chartColors} from './chart-styles.js';
+import {sma} from '../../lib/chart-helpers.js';
 
-export default class StatePerDay extends LitElement {
+
+export default class StateRates extends LitElement {
   static get styles() {
     return [chartStyles, css`
-      input {
+      #chart-range {
         width: 100%;
       }
     `];
@@ -19,7 +21,7 @@ export default class StatePerDay extends LitElement {
       },
       minIndex: {
         type: Number,
-      }
+      },
     };
   }
 
@@ -27,8 +29,9 @@ export default class StatePerDay extends LitElement {
     super();
     this.chart = null;
     this.selectedState = {};
-    this.stateData = {};
+    this.stateData = [];
     this.minIndex = 0;
+    this.deathRateLag = 14;
   }
 
   // TODO: use  positive tests percentage of total?
@@ -37,37 +40,38 @@ export default class StatePerDay extends LitElement {
       return;
     }
     const filtered = stateData.slice(this.minIndex);
-    const deathsPerDay = filtered.map(s => s.deathIncrease > 0 ? s.deathIncrease : 0);
-    const positiveTestsPerDay = filtered.map(s => s.positiveIncrease > 0 ? s.positiveIncrease : 0);
-    const hospitalized = filtered.map(s => s.hospitalizedIncrease > 0 ? s.hospitalizedIncrease : 0);
     const labels = filtered.map(s => s.date);
-    const totalTestsPerDay = filtered.map(s => s.totalTestResultsIncrease > 0 ? s.totalTestResultsIncrease : 0);
+
+    const deathSMA = sma(filtered.map((s, index) => {
+      const past = stateData[this.minIndex + index - this.deathRateLag];
+      if (past) {
+        const p = 100/(past.positiveIncrease/s.deathIncrease);
+        return p > 0 && !isNaN(p) ? p : 0;
+      }
+      return 0;
+    }), 7);
+    const ppSMA = sma(filtered.map(s => {
+      const p = 100/(s.totalTestResultsIncrease/s.positiveIncrease);
+      return p > 0 && !isNaN(p) ? p : 0;
+    }), 7);
+
     const datasets = [
       {
-        label:'Deaths per day',
-        data: deathsPerDay,
+        label: 'death rate',
+        data: deathSMA,
         borderColor: chartColors.get('danger'),
         fill: false,
+        spanGaps: true,
       },
       {
-        label: 'Positive tests per day',
-        data: positiveTestsPerDay,
-        borderColor: chartColors.get('neutral'),
+        label: 'positive percentage',
+        data: ppSMA,
+        borderColor: chartColors.get('neutral2'),
         fill: false,
-      },
-      {
-        label: 'hospitalized per day',
-        data: hospitalized,
-        borderColor: chartColors.get('warning'),
-        fill: false,
-      },
-      {
-        label: 'total tests per day',
-        data: totalTestsPerDay,
-        borderColor: chartColors.get('positive'),
-        fill: false,
+        spanGaps: true,
       },
     ]
+
     if (!this.chart) {
       this.chart = new Chart(this.shadowRoot.querySelector('canvas').getContext('2d'), {
         type: 'line',
@@ -77,10 +81,6 @@ export default class StatePerDay extends LitElement {
         }
       });
     } else {
-      // this.chart.data = {
-      //   labels,
-      //   datasets
-      // };
       this.chart.data.labels = labels;
       this.chart.data.datasets.forEach(d => {
         const newData = datasets.find(ds => ds.label === d.label);
@@ -97,17 +97,18 @@ export default class StatePerDay extends LitElement {
   }
 
   onRangeChange(event) {
-    this.minIndex = event.currentTarget.value;
+    this.minIndex = Number(event.currentTarget.value);
   }
 
   render() {
     return html`
       <header>
-        <h4>Daily cases & deaths</h4>
+        <h4>Daily death rate and positivity rate (7 day moving average)</h4>
+        <p> * death rates typically lag behind positive cases. The rate calculated here is done by comparing the current day's deaths, to the positive test count from the day 2 weeks prior.</p>
       </header>
       <article>
         <canvas></canvas>
-        <input type="range" min=0 max=${this.stateData.length} value=${this.minIndex} @input=${event => this.onRangeChange(event)}></input>
+        <input id="chart-range" type="range" min=0 max=${this.stateData.length} value=${this.minIndex} @input=${event => this.onRangeChange(event)}></input>
       </article>
       <footer>
         <p>data from <a href="https://covidtracking.com/api#states-historical-data">covidtracking.com</a></p>
@@ -116,4 +117,4 @@ export default class StatePerDay extends LitElement {
   }
 }
 
-customElements.define('state-per-day', StatePerDay);
+customElements.define('state-rates', StateRates);
